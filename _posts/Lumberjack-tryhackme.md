@@ -1,10 +1,9 @@
 ---
-title: Writing Build script to setup our VM
+title: LumberJack-writeup-THM
 date: '2022-01-18 15:23:05 +0200'
 categories:
-  - Build vulnerable VMs
-  - Build script
-tags: vagrant VMs buildscript
+  -Log4j
+tags: THM Log4j
 published: true
 ---
 
