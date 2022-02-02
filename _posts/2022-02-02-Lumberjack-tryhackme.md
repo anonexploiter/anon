@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 published: false
 ---
@@ -6,6 +7,22 @@ published: false
 ## Status
 
  Hello everyone this is my first ctf writeup. Name of the box is Lumberjack from tryhackme, it’s based on Log4j (CVE-2021-44228) it is a medium level challenge.
+=======
+﻿---
+
+title: Lumberjack-THM
+
+date: 2022-02-02 15:23:05 +0200
+
+categories: [Log4j]
+
+tags: THM 
+
+---
+
+
+Hello everyone this is my first ctf writeup. Name of the box is Lumberjack from tryhackme, it’s based on Log4j (CVE-2021-44228) it is a medium level challenge.
+>>>>>>> master
 
 Created by : SilverStr
 
@@ -22,7 +39,11 @@ Results from nmap showed 2 open ports
 In ssh there is nothing to see so went to check up the http port 80.
 
 \--------------------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
 ## lets start
+=======
+
+>>>>>>> master
 ![image](https://i.imgur.com/znguXwU.png)
 
 Nothing to see in this port. After that I used burp to capture the request of this site.
@@ -130,7 +151,11 @@ cat .\_fLaG2
 ![image](https://i.imgur.com/cyDyJ8y.png)
 
 At last, I found the final flag. A wonderful medium level ctf to know what is log4j and how its working
+<<<<<<< HEAD
 1.
+=======
+
+>>>>>>> master
 
 
 

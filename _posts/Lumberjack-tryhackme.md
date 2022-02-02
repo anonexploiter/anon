@@ -27,7 +27,7 @@ Results from nmap showed 2 open ports
 In ssh there is nothing to see so went to check up the http port 80.
 
 \--------------------------------------------------------------------------------------------------------------------------------------
-## lets start
+## lets go
 ![image](https://i.imgur.com/znguXwU.png)
 
 Nothing to see in this port. After that I used burp to capture the request of this site.
