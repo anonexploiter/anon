@@ -10,9 +10,8 @@ title: 0xanon
 tagline: Cybersec student | CTF Player | Python dev
 
 description: >-
-  I'll post bogs about some automations , ctf writeups and web application security topics
-  
-url: 'https://0xanon.me'
+  I'll post blogs about some automations , ctf writeups and web application security topics 
+url: 'https://www.0xanon.ga'
 
 author: Surendar
 
@@ -35,7 +34,7 @@ google_site_verification: wjab7JjezNdGg3dhJv8-6KbCIlqjjYnFBlntUWCuq3g
 
 #--------------------------
 
-baseurl: ''
+baseurl: '/anon/'
 
 timezone: Asia/Kolkata
 
