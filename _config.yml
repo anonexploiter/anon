@@ -5,9 +5,9 @@
 # MIT licensed
 #--------------------------
 
-title: 0xanon
+title: Surendar-blog
 
-tagline: Cybersec student | CTF Player | Python dev
+tagline: l𝚎𝚝'𝚜 𝚙𝚠𝚗 𝚝𝚑𝚎 𝚑𝚎𝚊𝚛𝚝 𝚘𝚏 𝚏𝚊𝚖𝚎 👾
 
 description: >-
   I'll post blogs about some automations , ctf writeups and web application security topics 
@@ -25,7 +25,7 @@ twitter:
 
 social:
   name: anonexploiter
-  email: blackdevilsurea@gmail.com
+  email: surendar137.v@gmail.com
   links:
     - https://twitter.com/anonexploiter
     - https://github.com/anonexploiter
@@ -39,7 +39,7 @@ baseurl: ''
 timezone: Asia/Kolkata
 
 google_analytics:
-  id: 'G-1WZELSLYX1'
+  id: 'G-0NH37MHFSS'
   pv:
     enabled: false
     proxy_url: ''
